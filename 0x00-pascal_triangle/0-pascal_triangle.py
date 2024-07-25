@@ -1,29 +1,44 @@
-def pascal_triangle(n):
-    """
-    Generates Pascal's triangle up to the nth row.
-    Returns a list of lists of integers.
-    """
-    if n <= 0:
-        return []  # Return an empty list for non-positive n
+#!/usr/bin/env python3
+"""Calculate Pascal's Triangle"""
 
-    triangle = [[1]]  # Initialize the first row with [1]
-
-    for i in range(1, n):
-        prev_row = triangle[-1]  # Get the previous row
-        new_row = [1]  # Start the new row with 1
-
-        # Calculate the middle elements of the row
+def get_triangle(num):
+    """Return 2D list of Pascal's Triangle up to num rows"""
+    if num <= 0:
+        return []
+    
+    ret = [[1]]
+    for i in range(1, num):
+        row = [1]  # Start with 1
         for j in range(1, i):
-            new_elem = prev_row[j - 1] + prev_row[j]
-            new_row.append(new_elem)
+            row.append(ret[i-1][j-1] + ret[i-1][j])
+        row.append(1)  # End with 1
+        ret.append(row)
+    
+    return ret
 
-        new_row.append(1)  # End the row with 1
-        triangle.append(new_row)  # Add the new row to the triangle
+def main():
+    """Get number of rows to calculate from the user and show a pretty triangle"""
+    try:
+        num = int(input('Number of rows: '))
+    except ValueError:
+        print('Please input a valid integer.')
+        exit(1)
+    
+    triangle = get_triangle(num)
+    
+    if not triangle:
+        print('Number of rows must be a positive integer.')
+        return
+    
+    length = len(triangle)
+    
+    if length > 100:
+        print('Too large, not displaying.')
+        return
+    
+    for i in range(length):
+        row = triangle[i]
+        print(' ' * (length - i - 1) + ' '.join(str(j) for j in row))
 
-    return triangle
-
-# Example usage:
-if __name__ == "__main__":
-    triangle = pascal_triangle(5)
-    for row in triangle:
-        print(row)
+if __name__ == '__main__':
+    main()

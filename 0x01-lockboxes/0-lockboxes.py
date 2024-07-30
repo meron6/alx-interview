@@ -1,12 +1,21 @@
 #!/usr/bin/python3
+def canUnlockAll(boxes):
+    # Initialize the list to track visited boxes
+    n = len(boxes)
+    visited = [False] * n
+    visited[0] = True  # The first box is unlocked
 
-canUnlockAll = __import__('0-lockboxes').canUnlockAll
+    # Stack for DFS
+    stack = [0]
 
-boxes = [[1], [2], [3], [4], []]
-print(canUnlockAll(boxes))  # True
+    # Perform DFS
+    while stack:
+        box = stack.pop()
 
-boxes = [[1, 4, 6], [2], [0, 4, 1], [5, 6, 2], [3], [4, 1], [6]]
-print(canUnlockAll(boxes))  # True
+        for key in boxes[box]:
+            if key < n and not visited[key]:
+                visited[key] = True
+                stack.append(key)
 
-boxes = [[1, 4], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
-print(canUnlockAll(boxes))  # False
+    # Check if all boxes are visited
+    return all(visited)

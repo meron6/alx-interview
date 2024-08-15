@@ -1,53 +1,51 @@
 #!/usr/bin/python3
 """Reads from standard input and computes metrics.
 
-After every ten lines or the input of a keyboard interruption (CTRL + C),
-prints the following statistics:
-    - Total file size up to that point.
-    - Count of read status codes up to that point.
+This script prints the following statistics after every ten lines or upon a keyboard interruption (CTRL + C):
+    - The total file size read up to that point.
+    - The count of each read status code up to that point.
 """
 
 def print_stats(size, status_codes):
-    """Print accumulated metrics.
+    """Prints the accumulated metrics.
 
     Args:
-        size (int): The accumulated read file size.
-        status_codes (dict): The accumulated count of status codes.
+        size (int): The total read file size.
+        status_codes (dict): The count of status codes.
     """
-    print("File size: {}".format(size))
-    for key in sorted(status_codes):
-        print("{}: {}".format(key, status_codes[key]))
+    print(f"File size: {size}")
+    for key in sorted(status_codes.keys()):
+        print(f"{key}: {status_codes[key]}")
 
 if __name__ == "__main__":
     import sys
 
     size = 0
-    status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+    status_codes = {}
+    valid_codes = ['200', '301', '400', '401', '403', '404', '405', '500']
     count = 0
 
     try:
         for line in sys.stdin:
-            count += 1
-
-            if count % 10 == 0:
+            if count == 10:
                 print_stats(size, status_codes)
+                count = 0
+            count += 1
 
             parts = line.split()
 
-            if len(parts) < 7:
-                continue  # Skip lines that don't have the expected number of parts
-
             try:
                 size += int(parts[-1])
-            except ValueError:
-                pass  # Ignore lines with invalid file size
+            except (IndexError, ValueError):
+                continue
 
             try:
-                status_code = int(parts[-2])
-                if status_code in status_codes:
-                    status_codes[status_code] += 1
-            except ValueError:
-                pass  # Ignore lines with invalid status code
+                if parts[-2] in valid_codes:
+                    status_codes[parts[-2]] = status_codes.get(parts[-2], 0) + 1
+            except IndexError:
+                continue
+
+        print_stats(size, status_codes)
 
     except KeyboardInterrupt:
         print_stats(size, status_codes)

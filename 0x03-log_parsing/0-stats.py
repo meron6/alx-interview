@@ -1,17 +1,15 @@
 #!/usr/bin/python3
 """
 This module contains a method that reads stdin line by line and
-computes metrics
+computes metrics.
 """
-import dis
 import sys
 
 
 def display_metrics(total_size, status_code):
     """
-    Function that print the metrics
+    Function that prints the metrics.
     """
-
     print('File size: {}'.format(total_size))
     for key, value in sorted(status_code.items()):
         if value != 0:
@@ -38,7 +36,10 @@ if __name__ == '__main__':
             if len(args) > 6:
                 status = args[-2]
                 file_size = args[-1]
-                total_size += int(file_size)
+                try:
+                    total_size += int(file_size)
+                except ValueError:
+                    continue
                 if status in status_code:
                     i += 1
                     status_code[status] += 1

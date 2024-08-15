@@ -1,35 +1,54 @@
-#!/usr/bin/env python3
-import sys
+#!/usr/bin/python3
+"""Reads from standard input and computes metrics.
 
-def print_stats(file_size, status_codes):
-    print(f"File size: {file_size}")
-    for status_code in sorted(status_codes.keys()):
-        print(f"{status_code}: {status_codes[status_code]}")
+After every ten lines or the input of a keyboard interruption (CTRL + C),
+prints the following statistics:
+    - Total file size up to that point.
+    - Count of read status codes up to that point.
+"""
+
+def print_stats(size, status_codes):
+    """Print accumulated metrics.
+
+    Args:
+        size (int): The accumulated read file size.
+        status_codes (dict): The accumulated count of status codes.
+    """
+    print("File size: {}".format(size))
+    for key in sorted(status_codes):
+        print("{}: {}".format(key, status_codes[key]))
 
 if __name__ == "__main__":
-    file_size = 0
+    import sys
+
+    size = 0
     status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
-    line_count = 0
+    count = 0
 
     try:
         for line in sys.stdin:
-            line_count += 1
+            count += 1
+
+            if count % 10 == 0:
+                print_stats(size, status_codes)
+
             parts = line.split()
-            if len(parts) != 7:
-                continue  # Skip lines that don't match the expected format
-            
+
+            if len(parts) < 7:
+                continue  # Skip lines that don't have the expected number of parts
+
             try:
-                status_code = int(parts[6])
+                size += int(parts[-1])
+            except ValueError:
+                pass  # Ignore lines with invalid file size
+
+            try:
+                status_code = int(parts[-2])
                 if status_code in status_codes:
                     status_codes[status_code] += 1
-                file_size += int(parts[5])
             except ValueError:
-                continue  # Skip lines with invalid status codes or file sizes
-
-            if line_count % 10 == 0:
-                print_stats(file_size, status_codes)
-                file_size = 0
-                status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+                pass  # Ignore lines with invalid status code
 
     except KeyboardInterrupt:
-        print_stats(file_size, status_codes)
+        print_stats(size, status_codes)
+        raise

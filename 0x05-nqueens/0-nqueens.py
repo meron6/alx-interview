@@ -1,38 +1,36 @@
 #!/usr/bin/python3
-"""N queens (N queens problem)"""
+"""N-Queens Problem Solver"""
 
 
 class NQueens:
-    """Solve N-Queens problem"""
+    """Solve the N-Queens problem."""
 
-    def __init__(self, nqs: int):
-        self.nqs = nqs
-        self.solutions = None
-        self.tracker = [-1] * nqs
+    def __init__(self, n: int):
+        self.n = n
+        self.solutions = []
+        self.tracker = [-1] * n
 
-    def valid(self, col: int):
-        """Check if a queen can be placed in a column"""
+    def valid(self, col: int) -> bool:
+        """Check if placing a queen in the column is valid."""
         for i in range(col):
             if abs(self.tracker[i] - self.tracker[col]) in {0, col - i}:
                 return False
         return True
 
     def helper(self, index: int, cols):
-        """Solve N-Queens problem"""
-        if index == self.nqs:
+        """Recursive helper function to solve the problem."""
+        if index == self.n:
             self.solutions.append(cols)
             return
-        for i in range(self.nqs):
+        for i in range(self.n):
             self.tracker[index] = i
             if self.valid(index):
                 self.helper(index + 1, cols + [i])
 
     def solve(self):
-        """Run recursive helper function"""
-        if self.solutions is None:
-            self.solutions = []
-            self.helper(0, [])
-        return [list(enumerate(sol)) for sol in self.solutions]
+        """Run the recursive solver and return all solutions."""
+        self.helper(0, [])
+        return [[(i, sol[i]) for i in range(self.n)] for sol in self.solutions]
 
 
 if __name__ == '__main__':
@@ -55,5 +53,4 @@ if __name__ == '__main__':
     solver = NQueens(n)
     solutions = solver.solve()
     for res in solutions:
-        out = [list(el) for el in res]
-        print(out)
+        print(res)

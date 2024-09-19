@@ -3,7 +3,6 @@
 Making Change
 """
 
-
 def makeChange(coins, total):
     """
     Return the minimum number of coins needed to meet a given total.
@@ -30,3 +29,9 @@ def makeChange(coins, total):
 
     # If dp[total] is still infinity, it means the total cannot be made with the given coins
     return dp[total] if dp[total] != float('inf') else -1
+
+# Example usage
+if __name__ == "__main__":
+    coins = [1, 2, 5]
+    total = 11
+    print(makeChange(coins, total))  # Output: 3 (5 + 5 + 1)

@@ -3,35 +3,41 @@
 Making Change
 """
 
+
 def makeChange(coins, total):
     """
-    Return the minimum number of coins needed to meet a given total.
-    
+    Return the minimum number of coins needed to meet a given total
     Args:
-        coins (list of ints): a list of coins of different values.
-        total (int): total value to be met.
-        
+        coins (list of ints): a list of coins of different values
+        total (int): total value to be met
     Return:
-        int: fewest number of coins needed to make the total.
-             Return -1 if the total cannot be met by any number of coins.
+        Number of coins or -1 if meeting the total is not possible
     """
     if total <= 0:
         return 0
+    if coins == [] or coins is None:
+        return -1
+    try:
+        n = coins.index(total)
+        return 1
+    except ValueError:
+        pass
 
-    # Initialize a list for storing the fewest number of coins for each amount up to total
-    dp = [float('inf')] * (total + 1)
-    dp[0] = 0  # Base case: 0 coins are needed to make the total 0
-
-    # Loop over each coin
-    for coin in coins:
-        for amount in range(coin, total + 1):
-            dp[amount] = min(dp[amount], dp[amount - coin] + 1)
-
-    # If dp[total] is still infinity, it means the total cannot be made with the given coins
-    return dp[total] if dp[total] != float('inf') else -1
-
-# Example usage
-if __name__ == "__main__":
-    coins = [1, 2, 5]
-    total = 11
-    print(makeChange(coins, total))  # Output: 3 (5 + 5 + 1)
+    coins.sort(reverse=True)
+    coin_count = 0
+    for i in coins:
+        if total % i == 0:
+            coin_count += int(total / i)
+            return coin_count
+        if total - i >= 0:
+            if int(total / i) > 1:
+                coin_count += int(total / i)
+                total = total % i
+            else:
+                coin_count += 1
+                total -= i
+                if total == 0:
+                    break
+    if total > 0:
+        return -1
+    return coin_count
